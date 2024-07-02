@@ -37,7 +37,7 @@ object enumerations:
     val CURL_FORMADD_DISABLED = define(7)
     val CURL_FORMADD_LAST = define(8)
     inline def getName(inline value: CURLFORMcode): Option[String] =
-      inline value match
+      value match
         case CURL_FORMADD_OK => Some("CURL_FORMADD_OK")
         case CURL_FORMADD_MEMORY => Some("CURL_FORMADD_MEMORY")
         case CURL_FORMADD_OPTION_TWICE => Some("CURL_FORMADD_OPTION_TWICE")
@@ -68,7 +68,7 @@ object enumerations:
     val CURLHE_BAD_ARGUMENT = define(6)
     val CURLHE_NOT_BUILT_IN = define(7)
     inline def getName(inline value: CURLHcode): Option[String] =
-      inline value match
+      value match
         case CURLHE_OK => Some("CURLHE_OK")
         case CURLHE_BADINDEX => Some("CURLHE_BADINDEX")
         case CURLHE_MISSING => Some("CURLHE_MISSING")
@@ -163,7 +163,7 @@ object enumerations:
     val CURLINFO_CONN_ID = define(6291520)
     val CURLINFO_LASTONE = define(64)
     inline def getName(inline value: CURLINFO): Option[String] =
-      inline value match
+      value match
         case CURLINFO_NONE => Some("CURLINFO_NONE")
         case CURLINFO_EFFECTIVE_URL => Some("CURLINFO_EFFECTIVE_URL")
         case CURLINFO_RESPONSE_CODE => Some("CURLINFO_RESPONSE_CODE")
@@ -253,7 +253,7 @@ object enumerations:
     val CURLMSG_DONE = define(1)
     val CURLMSG_LAST = define(2)
     inline def getName(inline value: CURLMSG): Option[String] =
-      inline value match
+      value match
         case CURLMSG_NONE => Some("CURLMSG_NONE")
         case CURLMSG_DONE => Some("CURLMSG_DONE")
         case CURLMSG_LAST => Some("CURLMSG_LAST")
@@ -285,7 +285,7 @@ object enumerations:
     val CURLM_UNRECOVERABLE_POLL = define(12)
     val CURLM_LAST = define(13)
     inline def getName(inline value: CURLMcode): Option[String] =
-      inline value match
+      value match
         case CURLM_CALL_MULTI_PERFORM => Some("CURLM_CALL_MULTI_PERFORM")
         case CURLM_OK => Some("CURLM_OK")
         case CURLM_BAD_HANDLE => Some("CURLM_BAD_HANDLE")
@@ -331,7 +331,7 @@ object enumerations:
     val CURLMOPT_MAX_CONCURRENT_STREAMS = define(16)
     val CURLMOPT_LASTENTRY = define(17)
     inline def getName(inline value: CURLMoption): Option[String] =
-      inline value match
+      value match
         case CURLMOPT_SOCKETFUNCTION => Some("CURLMOPT_SOCKETFUNCTION")
         case CURLMOPT_SOCKETDATA => Some("CURLMOPT_SOCKETDATA")
         case CURLMOPT_PIPELINING => Some("CURLMOPT_PIPELINING")
@@ -369,7 +369,7 @@ object enumerations:
     val CURLSHE_NOT_BUILT_IN = define(5)
     val CURLSHE_LAST = define(6)
     inline def getName(inline value: CURLSHcode): Option[String] =
-      inline value match
+      value match
         case CURLSHE_OK => Some("CURLSHE_OK")
         case CURLSHE_BAD_OPTION => Some("CURLSHE_BAD_OPTION")
         case CURLSHE_IN_USE => Some("CURLSHE_IN_USE")
@@ -397,7 +397,7 @@ object enumerations:
     val CURLSHOPT_USERDATA = define(5)
     val CURLSHOPT_LAST = define(6)
     inline def getName(inline value: CURLSHoption): Option[String] =
-      inline value match
+      value match
         case CURLSHOPT_NONE => Some("CURLSHOPT_NONE")
         case CURLSHOPT_SHARE => Some("CURLSHOPT_SHARE")
         case CURLSHOPT_UNSHARE => Some("CURLSHOPT_UNSHARE")
@@ -421,7 +421,7 @@ object enumerations:
     val CURLSTS_DONE = define(1)
     val CURLSTS_FAIL = define(2)
     inline def getName(inline value: CURLSTScode): Option[String] =
-      inline value match
+      value match
         case CURLSTS_OK => Some("CURLSTS_OK")
         case CURLSTS_DONE => Some("CURLSTS_DONE")
         case CURLSTS_FAIL => Some("CURLSTS_FAIL")
@@ -449,7 +449,7 @@ object enumerations:
     val CURLUPART_FRAGMENT = define(9)
     val CURLUPART_ZONEID = define(10)
     inline def getName(inline value: CURLUPart): Option[String] =
-      inline value match
+      value match
         case CURLUPART_URL => Some("CURLUPART_URL")
         case CURLUPART_SCHEME => Some("CURLUPART_SCHEME")
         case CURLUPART_USER => Some("CURLUPART_USER")
@@ -506,7 +506,7 @@ object enumerations:
     val CURLUE_LACKS_IDN = define(30)
     val CURLUE_LAST = define(31)
     inline def getName(inline value: CURLUcode): Option[String] =
-      inline value match
+      value match
         case CURLUE_OK => Some("CURLUE_OK")
         case CURLUE_BAD_HANDLE => Some("CURLUE_BAD_HANDLE")
         case CURLUE_BAD_PARTPOINTER => Some("CURLUE_BAD_PARTPOINTER")
@@ -556,7 +556,7 @@ object enumerations:
     val CURL_NETRC_REQUIRED = define(2)
     val CURL_NETRC_LAST = define(3)
     inline def getName(inline value: CURL_NETRC_OPTION): Option[String] =
-      inline value match
+      value match
         case CURL_NETRC_IGNORED => Some("CURL_NETRC_IGNORED")
         case CURL_NETRC_OPTIONAL => Some("CURL_NETRC_OPTIONAL")
         case CURL_NETRC_REQUIRED => Some("CURL_NETRC_REQUIRED")
@@ -577,7 +577,7 @@ object enumerations:
     val CURL_TLSAUTH_SRP = define(1)
     val CURL_TLSAUTH_LAST = define(2)
     inline def getName(inline value: CURL_TLSAUTH): Option[String] =
-      inline value match
+      value match
         case CURL_TLSAUTH_NONE => Some("CURL_TLSAUTH_NONE")
         case CURL_TLSAUTH_SRP => Some("CURL_TLSAUTH_SRP")
         case CURL_TLSAUTH_LAST => Some("CURL_TLSAUTH_LAST")
@@ -694,8 +694,8 @@ object enumerations:
     val CURLE_SSL_CLIENTCERT = define(98)
     val CURLE_UNRECOVERABLE_POLL = define(99)
     val CURL_LAST = define(100)
-    inline def getName(inline value: CURLcode): Option[String] =
-      inline value match
+    def getName(value: CURLcode): Option[String] =
+      value match
         case CURLE_OK => Some("CURLE_OK")
         case CURLE_UNSUPPORTED_PROTOCOL => Some("CURLE_UNSUPPORTED_PROTOCOL")
         case CURLE_FAILED_INIT => Some("CURLE_FAILED_INIT")
@@ -832,7 +832,7 @@ object enumerations:
     val CURLFORM_CONTENTLEN = define(20)
     val CURLFORM_LASTENTRY = define(21)
     inline def getName(inline value: CURLformoption): Option[String] =
-      inline value match
+      value match
         case CURLFORM_NOTHING => Some("CURLFORM_NOTHING")
         case CURLFORM_COPYNAME => Some("CURLFORM_COPYNAME")
         case CURLFORM_PTRNAME => Some("CURLFORM_PTRNAME")
@@ -1174,7 +1174,7 @@ object enumerations:
     val CURLOPT_HAPROXY_CLIENT_IP = define(10323)
     val CURLOPT_LASTENTRY = define(10324)
     inline def getName(inline value: CURLoption): Option[String] =
-      inline value match
+      value match
         case CURLOPT_WRITEDATA => Some("CURLOPT_WRITEDATA")
         case CURLOPT_URL => Some("CURLOPT_URL")
         case CURLOPT_PORT => Some("CURLOPT_PORT")
@@ -1529,7 +1529,7 @@ object enumerations:
     val CURLPX_USER_REJECTED = define(33)
     val CURLPX_LAST = define(34)
     inline def getName(inline value: CURLproxycode): Option[String] =
-      inline value match
+      value match
         case CURLPX_OK => Some("CURLPX_OK")
         case CURLPX_BAD_ADDRESS_TYPE => Some("CURLPX_BAD_ADDRESS_TYPE")
         case CURLPX_BAD_VERSION => Some("CURLPX_BAD_VERSION")
@@ -1582,7 +1582,7 @@ object enumerations:
     val CURLSSLSET_TOO_LATE = define(2)
     val CURLSSLSET_NO_BACKENDS = define(3)
     inline def getName(inline value: CURLsslset): Option[String] =
-      inline value match
+      value match
         case CURLSSLSET_OK => Some("CURLSSLSET_OK")
         case CURLSSLSET_UNKNOWN_BACKEND => Some("CURLSSLSET_UNKNOWN_BACKEND")
         case CURLSSLSET_TOO_LATE => Some("CURLSSLSET_TOO_LATE")
@@ -1613,7 +1613,7 @@ object enumerations:
     val CURLVERSION_ELEVENTH = define(10)
     val CURLVERSION_LAST = define(11)
     inline def getName(inline value: CURLversion): Option[String] =
-      inline value match
+      value match
         case CURLVERSION_FIRST => Some("CURLVERSION_FIRST")
         case CURLVERSION_SECOND => Some("CURLVERSION_SECOND")
         case CURLVERSION_THIRD => Some("CURLVERSION_THIRD")
@@ -1644,7 +1644,7 @@ object enumerations:
     val CURL_TIMECOND_LASTMOD = define(3)
     val CURL_TIMECOND_LAST = define(4)
     inline def getName(inline value: curl_TimeCond): Option[String] =
-      inline value match
+      value match
         case CURL_TIMECOND_NONE => Some("CURL_TIMECOND_NONE")
         case CURL_TIMECOND_IFMODSINCE => Some("CURL_TIMECOND_IFMODSINCE")
         case CURL_TIMECOND_IFUNMODSINCE => Some("CURL_TIMECOND_IFUNMODSINCE")
@@ -1670,7 +1670,7 @@ object enumerations:
     val CURLCLOSEPOLICY_CALLBACK = define(5)
     val CURLCLOSEPOLICY_LAST = define(6)
     inline def getName(inline value: curl_closepolicy): Option[String] =
-      inline value match
+      value match
         case CURLCLOSEPOLICY_NONE => Some("CURLCLOSEPOLICY_NONE")
         case CURLCLOSEPOLICY_OLDEST => Some("CURLCLOSEPOLICY_OLDEST")
         case CURLCLOSEPOLICY_LEAST_RECENTLY_USED => Some("CURLCLOSEPOLICY_LEAST_RECENTLY_USED")
@@ -1700,7 +1700,7 @@ object enumerations:
     val CURLOT_BLOB = define(7)
     val CURLOT_FUNCTION = define(8)
     inline def getName(inline value: curl_easytype): Option[String] =
-      inline value match
+      value match
         case CURLOT_LONG => Some("CURLOT_LONG")
         case CURLOT_VALUES => Some("CURLOT_VALUES")
         case CURLOT_OFF_T => Some("CURLOT_OFF_T")
@@ -1727,7 +1727,7 @@ object enumerations:
     val CURLFTPAUTH_TLS = define(2)
     val CURLFTPAUTH_LAST = define(3)
     inline def getName(inline value: curl_ftpauth): Option[String] =
-      inline value match
+      value match
         case CURLFTPAUTH_DEFAULT => Some("CURLFTPAUTH_DEFAULT")
         case CURLFTPAUTH_SSL => Some("CURLFTPAUTH_SSL")
         case CURLFTPAUTH_TLS => Some("CURLFTPAUTH_TLS")
@@ -1749,7 +1749,7 @@ object enumerations:
     val CURLFTPSSL_CCC_ACTIVE = define(2)
     val CURLFTPSSL_CCC_LAST = define(3)
     inline def getName(inline value: curl_ftpccc): Option[String] =
-      inline value match
+      value match
         case CURLFTPSSL_CCC_NONE => Some("CURLFTPSSL_CCC_NONE")
         case CURLFTPSSL_CCC_PASSIVE => Some("CURLFTPSSL_CCC_PASSIVE")
         case CURLFTPSSL_CCC_ACTIVE => Some("CURLFTPSSL_CCC_ACTIVE")
@@ -1771,7 +1771,7 @@ object enumerations:
     val CURLFTP_CREATE_DIR_RETRY = define(2)
     val CURLFTP_CREATE_DIR_LAST = define(3)
     inline def getName(inline value: curl_ftpcreatedir): Option[String] =
-      inline value match
+      value match
         case CURLFTP_CREATE_DIR_NONE => Some("CURLFTP_CREATE_DIR_NONE")
         case CURLFTP_CREATE_DIR => Some("CURLFTP_CREATE_DIR")
         case CURLFTP_CREATE_DIR_RETRY => Some("CURLFTP_CREATE_DIR_RETRY")
@@ -1794,7 +1794,7 @@ object enumerations:
     val CURLFTPMETHOD_SINGLECWD = define(3)
     val CURLFTPMETHOD_LAST = define(4)
     inline def getName(inline value: curl_ftpmethod): Option[String] =
-      inline value match
+      value match
         case CURLFTPMETHOD_DEFAULT => Some("CURLFTPMETHOD_DEFAULT")
         case CURLFTPMETHOD_MULTICWD => Some("CURLFTPMETHOD_MULTICWD")
         case CURLFTPMETHOD_NOCWD => Some("CURLFTPMETHOD_NOCWD")
@@ -1821,7 +1821,7 @@ object enumerations:
     val CURLINFO_SSL_DATA_OUT = define(6)
     val CURLINFO_END = define(7)
     inline def getName(inline value: curl_infotype): Option[String] =
-      inline value match
+      value match
         case CURLINFO_TEXT => Some("CURLINFO_TEXT")
         case CURLINFO_HEADER_IN => Some("CURLINFO_HEADER_IN")
         case CURLINFO_HEADER_OUT => Some("CURLINFO_HEADER_OUT")
@@ -1847,7 +1847,7 @@ object enumerations:
     val CURLKHMATCH_MISSING = define(2)
     val CURLKHMATCH_LAST = define(3)
     inline def getName(inline value: curl_khmatch): Option[String] =
-      inline value match
+      value match
         case CURLKHMATCH_OK => Some("CURLKHMATCH_OK")
         case CURLKHMATCH_MISMATCH => Some("CURLKHMATCH_MISMATCH")
         case CURLKHMATCH_MISSING => Some("CURLKHMATCH_MISSING")
@@ -1871,7 +1871,7 @@ object enumerations:
     val CURLKHSTAT_FINE_REPLACE = define(4)
     val CURLKHSTAT_LAST = define(5)
     inline def getName(inline value: curl_khstat): Option[String] =
-      inline value match
+      value match
         case CURLKHSTAT_FINE_ADD_TO_FILE => Some("CURLKHSTAT_FINE_ADD_TO_FILE")
         case CURLKHSTAT_FINE => Some("CURLKHSTAT_FINE")
         case CURLKHSTAT_REJECT => Some("CURLKHSTAT_REJECT")
@@ -1897,7 +1897,7 @@ object enumerations:
     val CURLKHTYPE_ECDSA = define(4)
     val CURLKHTYPE_ED25519 = define(5)
     inline def getName(inline value: curl_khtype): Option[String] =
-      inline value match
+      value match
         case CURLKHTYPE_UNKNOWN => Some("CURLKHTYPE_UNKNOWN")
         case CURLKHTYPE_RSA1 => Some("CURLKHTYPE_RSA1")
         case CURLKHTYPE_RSA => Some("CURLKHTYPE_RSA")
@@ -1921,7 +1921,7 @@ object enumerations:
     val CURL_LOCK_ACCESS_SINGLE = define(2)
     val CURL_LOCK_ACCESS_LAST = define(3)
     inline def getName(inline value: curl_lock_access): Option[String] =
-      inline value match
+      value match
         case CURL_LOCK_ACCESS_NONE => Some("CURL_LOCK_ACCESS_NONE")
         case CURL_LOCK_ACCESS_SHARED => Some("CURL_LOCK_ACCESS_SHARED")
         case CURL_LOCK_ACCESS_SINGLE => Some("CURL_LOCK_ACCESS_SINGLE")
@@ -1949,7 +1949,7 @@ object enumerations:
     val CURL_LOCK_DATA_HSTS = define(7)
     val CURL_LOCK_DATA_LAST = define(8)
     inline def getName(inline value: curl_lock_data): Option[String] =
-      inline value match
+      value match
         case CURL_LOCK_DATA_NONE => Some("CURL_LOCK_DATA_NONE")
         case CURL_LOCK_DATA_SHARE => Some("CURL_LOCK_DATA_SHARE")
         case CURL_LOCK_DATA_COOKIE => Some("CURL_LOCK_DATA_COOKIE")
@@ -1980,7 +1980,7 @@ object enumerations:
     val CURLPROXY_SOCKS4A = define(6)
     val CURLPROXY_SOCKS5_HOSTNAME = define(7)
     inline def getName(inline value: curl_proxytype): Option[String] =
-      inline value match
+      value match
         case CURLPROXY_HTTP => Some("CURLPROXY_HTTP")
         case CURLPROXY_HTTP_1_0 => Some("CURLPROXY_HTTP_1_0")
         case CURLPROXY_HTTPS => Some("CURLPROXY_HTTPS")
@@ -2017,7 +2017,7 @@ object enumerations:
     val CURLSSLBACKEND_BEARSSL = define(13)
     val CURLSSLBACKEND_RUSTLS = define(14)
     inline def getName(inline value: curl_sslbackend): Option[String] =
-      inline value match
+      value match
         case CURLSSLBACKEND_NONE => Some("CURLSSLBACKEND_NONE")
         case CURLSSLBACKEND_OPENSSL => Some("CURLSSLBACKEND_OPENSSL")
         case CURLSSLBACKEND_GNUTLS => Some("CURLSSLBACKEND_GNUTLS")
@@ -2051,7 +2051,7 @@ object enumerations:
     val CURLUSESSL_ALL = define(3)
     val CURLUSESSL_LAST = define(4)
     inline def getName(inline value: curl_usessl): Option[String] =
-      inline value match
+      value match
         case CURLUSESSL_NONE => Some("CURLUSESSL_NONE")
         case CURLUSESSL_TRY => Some("CURLUSESSL_TRY")
         case CURLUSESSL_CONTROL => Some("CURLUSESSL_CONTROL")
@@ -2079,7 +2079,7 @@ object enumerations:
     val CURLFILETYPE_DOOR = define(7)
     val CURLFILETYPE_UNKNOWN = define(8)
     inline def getName(inline value: curlfiletype): Option[String] =
-      inline value match
+      value match
         case CURLFILETYPE_FILE => Some("CURLFILETYPE_FILE")
         case CURLFILETYPE_DIRECTORY => Some("CURLFILETYPE_DIRECTORY")
         case CURLFILETYPE_SYMLINK => Some("CURLFILETYPE_SYMLINK")
@@ -2105,7 +2105,7 @@ object enumerations:
     val CURLIOCMD_RESTARTREAD = define(1)
     val CURLIOCMD_LAST = define(2)
     inline def getName(inline value: curliocmd): Option[String] =
-      inline value match
+      value match
         case CURLIOCMD_NOP => Some("CURLIOCMD_NOP")
         case CURLIOCMD_RESTARTREAD => Some("CURLIOCMD_RESTARTREAD")
         case CURLIOCMD_LAST => Some("CURLIOCMD_LAST")
@@ -2126,7 +2126,7 @@ object enumerations:
     val CURLIOE_FAILRESTART = define(2)
     val CURLIOE_LAST = define(3)
     inline def getName(inline value: curlioerr): Option[String] =
-      inline value match
+      value match
         case CURLIOE_OK => Some("CURLIOE_OK")
         case CURLIOE_UNKNOWNCMD => Some("CURLIOE_UNKNOWNCMD")
         case CURLIOE_FAILRESTART => Some("CURLIOE_FAILRESTART")
@@ -2147,7 +2147,7 @@ object enumerations:
     val CURLSOCKTYPE_ACCEPT = define(1)
     val CURLSOCKTYPE_LAST = define(2)
     inline def getName(inline value: curlsocktype): Option[String] =
-      inline value match
+      value match
         case CURLSOCKTYPE_IPCXN => Some("CURLSOCKTYPE_IPCXN")
         case CURLSOCKTYPE_ACCEPT => Some("CURLSOCKTYPE_ACCEPT")
         case CURLSOCKTYPE_LAST => Some("CURLSOCKTYPE_LAST")

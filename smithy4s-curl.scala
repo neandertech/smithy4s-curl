@@ -29,18 +29,27 @@ import util.chaining.*
 import curl.all as C
 import scala.collection.mutable.ArrayBuilder
 import scala.scalanative.libc.string
+import scala.scalanative.unsigned.*
 
-class SyncCurlClient private (CURL: Ptr[curl.all.CURL]) {
+class SyncCurlClient private (
+    private var valid: Boolean,
+    CURL: Ptr[curl.all.CURL]
+) extends AutoCloseable:
+  override def close(): Unit =
+    C.curl_easy_cleanup(CURL); valid = false
+
   import curl.all.CURLoption.*
   def send(request: smithy4s.http.HttpRequest[Blob]): Try[HttpResponse[Blob]] =
+    assert(valid, "This client has already been shut down and cannot be used!")
+
     val finalizers = Seq.newBuilder[() => Unit]
 
     finalizers += (() => C.curl_easy_reset(CURL))
 
     Zone:
       implicit z =>
-        try {
-          for {
+        try
+          for
             _ <- setMethod(request)
             _ <- setURL(request)
 
@@ -84,16 +93,16 @@ class SyncCurlClient private (CURL: Ptr[curl.all.CURL]) {
             headers = headerLines.flatMap(parseHeaders).groupMap(_._1)(_._2)
 
             code <- getCode()
-          } yield HttpResponse(
+          yield HttpResponse(
             code,
             headers,
-            Blob.apply(bodyBuilder.result())
+            Blob.apply(bodyBuilder.result().tap(arr => new String(arr)))
           )
-        } finally {
+        finally
           finalizers.result().foreach { fin =>
             fin()
           }
-        }
+  end send
 
   private def parseHeaders(str: String): Seq[(CaseInsensitive, String)] =
     val array = str
@@ -172,6 +181,7 @@ class SyncCurlClient private (CURL: Ptr[curl.all.CURL]) {
       }
     }
     slist
+  end makeHeaders
 
   private def setHeaders(
       handle: Ptr[C.CURL],
@@ -188,6 +198,7 @@ class SyncCurlClient private (CURL: Ptr[curl.all.CURL]) {
       ),
       () => C.curl_slist_free_all(slist)
     )
+  end setHeaders
 
   private def setMethod(request: HttpRequest[Blob])(using Zone): Try[Unit] =
     Try:
@@ -209,16 +220,12 @@ class SyncCurlClient private (CURL: Ptr[curl.all.CURL]) {
   private inline def OPT[T](opt: curl.all.CURLoption, value: T) =
     check(curl.all.curl_easy_setopt(CURL, opt, value))
 
-  // private inline def OPTry[T](opt: curl.all.CURLoption, value: T) =
-  //   Try(check(curl.all.curl_easy_setopt(CURL, opt, value)))
-
-  def fromSmithy4sHttpUri(uri: smithy4s.http.HttpUri): String = {
+  def fromSmithy4sHttpUri(uri: smithy4s.http.HttpUri): String =
     val qp = uri.queryParams
-    val newValue = {
+    val newValue =
       uri.scheme match
         case Http  => "http"
         case Https => "https"
-    }
     val hostName = uri.host
     val port =
       uri.port
@@ -241,17 +248,16 @@ class SyncCurlClient private (CURL: Ptr[curl.all.CURL]) {
             do
               if i == 0 then b += "=" + value
               else b += s"&$key=$value"
+            end for
 
         b
 
     s"$newValue://$hostName$port$path$query"
-  }
+  end fromSmithy4sHttpUri
+end SyncCurlClient
 
-}
-
-object SyncCurlClient {
-  def apply() = new SyncCurlClient(curl.all.curl_easy_init())
-}
+object SyncCurlClient:
+  def apply() = new SyncCurlClient(valid = true, curl.all.curl_easy_init())
 
 class SimpleRestJsonCurlClient[
     Alg[_[_, _, _, _, _]]
@@ -261,7 +267,7 @@ class SimpleRestJsonCurlClient[
     client: SyncCurlClient,
     middleware: Endpoint.Middleware[SyncCurlClient],
     codecs: SimpleRestJsonCodecs
-) {
+):
 
   def withMaxArity(maxArity: Int): SimpleRestJsonCurlClient[Alg] =
     changeCodecs(_.copy(maxArity = maxArity))
@@ -304,10 +310,9 @@ class SimpleRestJsonCurlClient[
       middleware,
       f(codecs)
     )
+end SimpleRestJsonCurlClient
 
-}
-
-object SimpleRestJsonCurlClient {
+object SimpleRestJsonCurlClient:
 
   def apply[Alg[_[_, _, _, _, _]]](
       service: smithy4s.Service[Alg],
@@ -323,13 +328,12 @@ object SimpleRestJsonCurlClient {
     )
 
   private def lowLevelClient(fetch: SyncCurlClient) =
-    new UnaryLowLevelClient[Try, HttpRequest[Blob], HttpResponse[Blob]] {
+    new UnaryLowLevelClient[Try, HttpRequest[Blob], HttpResponse[Blob]]:
       override def run[Output](request: HttpRequest[Blob])(
           responseCB: HttpResponse[Blob] => Try[Output]
       ): Try[Output] =
         fetch.send(request).flatMap(responseCB)
-    }
-}
+end SimpleRestJsonCurlClient
 
 private[smithy4s_curl] object SimpleRestJsonCodecs
     extends SimpleRestJsonCodecs(1024, false, false)
@@ -338,104 +342,80 @@ private[smithy4s_curl] case class SimpleRestJsonCodecs(
     maxArity: Int,
     explicitDefaultsEncoding: Boolean,
     hostPrefixInjection: Boolean
-) {
+):
   private val hintMask =
     alloy.SimpleRestJson.protocol.hintMask
 
-  // def unsafeFromSmithy4sHttpMethod(
-  //     method: smithy4s.http.HttpMethod
-  // ): org.scalajs.dom.HttpMethod =
-  //   import smithy4s.http.HttpMethod.*
-  //   import org.scalajs.dom.HttpMethod as FetchMethod
-  //   method match
-  //     case GET       => FetchMethod.GET
-  //     case PUT       => FetchMethod.PUT
-  //     case POST      => FetchMethod.POST
-  //     case DELETE    => FetchMethod.DELETE
-  //     case PATCH     => FetchMethod.PATCH
-  //     case OTHER(nm) => nm.asInstanceOf[FetchMethod]
+  object StackZone extends Zone:
 
-  // def toHeaders(smithyHeaders: Map[CaseInsensitive, Seq[String]]): Headers = {
+    override inline def alloc(size: CSize): Ptr[Byte] = stackalloc[Byte](size)
 
-  //   val h = new Headers()
+    override def close(): Unit = ()
 
-  //   smithyHeaders.foreach { case (name, values) =>
-  //     values.foreach { value =>
-  //       h.append(name.toString, value)
-  //     }
-  //   }
-
-  //   h
-  // }
-
-  // def toSmithy4sHttpResponse(
-  //     resp: Response
-  // ): Promise[smithy4s.http.HttpResponse[Blob]] = {
-  //   resp
-  //     .arrayBuffer()
-  //     .`then`: body =>
-  //       val headers = Map.newBuilder[CaseInsensitive, Seq[String]]
-
-  //       resp.headers.foreach:
-  //         case arr if arr.size >= 2 =>
-  //           val header = arr(0)
-  //           val values = arr.tail.toSeq
-  //           headers += CaseInsensitive(header) -> values
-  //         case _ =>
-
-  //       smithy4s.http.HttpResponse(
-  //         resp.status,
-  //         headers.result(),
-  //         Blob(new Int8Array(body).toArray)
-  //       )
-
-  // }
-
-  // def fromSmithy4sHttpRequest(
-  //     req: smithy4s.http.HttpRequest[Blob]
-  // ): Request = {
-  //   val m = unsafeFromSmithy4sHttpMethod(req.method)
-  //   val h = toHeaders(req.headers)
-  //   val ri = new RequestInit {}
-  //   if (req.body.size != 0) {
-  //     val arr = new Int8Array(req.body.size)
-  //     arr.set(
-  //       req.body.toArray.toJSArray,
-  //       0
-  //     )
-  //     ri.body = arr
-  //     h.append("Content-Length", req.body.size.toString)
-  //   }
-
-  //   ri.method = m
-  //   ri.headers = h
-
-  //   new Request(fromSmithy4sHttpUri(req.uri), ri)
-  // }
+    override def isClosed: Boolean = false
+  end StackZone
 
   def toSmithy4sHttpUri(
       uri: String,
       pathParams: Option[smithy4s.http.PathParams] = None
-  ): smithy4s.http.HttpUri = {
-    // import smithy4s.http.*
-    // val uriScheme = uri.protocol match {
-    //   case "https:" => HttpUriScheme.Https
-    //   case "http:"  => HttpUriScheme.Http
-    //   case _ =>
-    //     throw UnsupportedOperationException(
-    //       s"Protocol `${uri.protocol}` is not supported"
-    //     )
-    // }
+  ): smithy4s.http.HttpUri =
 
-    HttpUri(
-      HttpUriScheme.Https,
-      "httpbin.org",
-      None,
-      IndexedSeq.empty,
-      Map.empty,
-      pathParams
-    )
-  }
+    import C.CURLUPart.*
+    import C.CURLUcode.*
+
+    Zone:
+      implicit z =>
+
+        val url = C.curl_url()
+
+        checkU(
+          C.curl_url_set(
+            url,
+            CURLUPART_URL,
+            toCString(uri),
+            0.toUInt
+          )
+        )
+
+        def getPart(part: C.CURLUPart): String =
+          val scheme = stackalloc[Ptr[Byte]](1)
+
+          checkU(C.curl_url_get(url, part, scheme, 0.toUInt))
+
+          val str = fromCString(!scheme)
+
+          C.curl_free(!scheme)
+
+          str
+        end getPart
+
+        val httpScheme = getPart(CURLUPART_SCHEME) match
+          case "https" => HttpUriScheme.Https
+          case "http"  => HttpUriScheme.Http
+          case other =>
+            throw UnsupportedOperationException(
+              s"Protocol `${other}` is not supported"
+            )
+
+        val port = Try(getPart(CURLUPART_PORT)) match
+          case Failure(CurlUrlParseException(CURLUE_NO_PORT, _)) =>
+            None
+          case Success(value) => Some(value.toInt)
+
+          case Failure(other) => throw other
+
+        val host = getPart(CURLUPART_HOST)
+        val path = getPart(CURLUPART_PATH).split("/").dropWhile(_.isEmpty())
+
+        HttpUri(
+          httpScheme,
+          host,
+          port,
+          path,
+          Map.empty,
+          pathParams
+        )
+  end toSmithy4sHttpUri
 
   val jsonCodecs = Json.payloadCodecs
     .withJsoniterCodecCompiler(
@@ -457,7 +437,7 @@ private[smithy4s_curl] case class SimpleRestJsonCodecs(
 
   def makeClientCodecs(
       uri: String
-  ): UnaryClientCodecs.Make[Try, HttpRequest[Blob], HttpResponse[Blob]] = {
+  ): UnaryClientCodecs.Make[Try, HttpRequest[Blob], HttpResponse[Blob]] =
     val baseRequest = HttpRequest(
       HttpMethod.POST,
       toSmithy4sHttpUri(uri, None),
@@ -484,9 +464,8 @@ private[smithy4s_curl] case class SimpleRestJsonCodecs(
       .withResponseTransformation[HttpResponse[Blob]](Success(_))
       .withHostPrefixInjection(hostPrefixInjection)
       .build()
-
-  }
-}
+  end makeClientCodecs
+end SimpleRestJsonCodecs
 
 given MonadThrowLike[Try] with
   def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
@@ -495,7 +474,6 @@ given MonadThrowLike[Try] with
       case Failure(exception) => f(exception)
       case _                  => fa
 
-  // fa.transform(identity, f)
   def pure[A](a: A): Try[A] = Success(a)
   def raiseError[A](e: Throwable): Try[A] = Failure(e)
   def zipMapAll[A](seq: IndexedSeq[Try[Any]])(f: IndexedSeq[Any] => A): Try[A] =
@@ -503,12 +481,19 @@ given MonadThrowLike[Try] with
     b.sizeHint(seq.size)
     var failure: Throwable = null
 
-    seq.foreach {
-      case Failure(exception) => failure = exception
-      case Success(value)     => if failure == null then b += value
-    }
+    var i = 0
+
+    while failure == null && i < seq.length do
+      seq(i) match
+        case Failure(exception) => failure = exception
+        case Success(value)     => if failure == null then b += value
+
+      i += 1
+    end while
 
     if failure != null then Failure(failure) else Try(f(b.result()))
+  end zipMapAll
+end given
 
 import smithy4s_curl.*
 import httpbin.*
@@ -521,3 +506,4 @@ import httpbin.*
   ).make
 
   println(smithyClient.anything(25, Some("This is a test!")))
+end hello
