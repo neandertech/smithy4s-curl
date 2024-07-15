@@ -4,7 +4,7 @@ import scalanative.unsafe.*
 
 private[smithy4s_curl] type Captured[D] = D
 private[smithy4s_curl] object Captured:
-  def unsafe[D <: AnyRef: Tag](value: D): (Ptr[Captured[D]], () => Unit) = {
+  def unsafe[D <: AnyRef: Tag](value: D): (Ptr[Captured[D]], () => Unit) =
     import scalanative.runtime.*
 
     val rawptr = libc.malloc(sizeof[Captured[D]])
@@ -19,7 +19,7 @@ private[smithy4s_curl] object Captured:
     GCRoots.addRoot(value)
 
     (mem, deallocate)
-  }
+  end unsafe
 
 end Captured
 

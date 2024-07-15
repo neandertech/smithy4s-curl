@@ -1,5 +1,6 @@
 package smithy4s_curl
 
+import curl.all as C
 import smithy4s.Endpoint.Middleware
 import smithy4s.capability.MonadThrowLike
 import smithy4s.client.*
@@ -7,36 +8,33 @@ import smithy4s.codecs.BlobEncoder
 import smithy4s.http.HttpUriScheme.{Http, Https}
 import smithy4s.http.{
   CaseInsensitive,
+  HttpDiscriminator,
   HttpMethod,
   HttpRequest,
+  HttpResponse,
   HttpUnaryClientCodecs,
+  HttpUri,
+  HttpUriScheme,
   Metadata
 }
 import smithy4s.json.Json
 import smithy4s.{Blob, Endpoint}
 
-import smithy4s.http.HttpDiscriminator
-
-import scalanative.unsafe.*
-import smithy4s.http.HttpResponse
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-import smithy4s.http.HttpUriScheme
-import smithy4s.http.HttpUri
-import util.chaining.*
-
-import curl.all as C
 import scala.collection.mutable.ArrayBuilder
 import scala.scalanative.libc.string
 import scala.scalanative.unsigned.*
+import scala.util.{Failure, Success, Try}
+
+import scalanative.unsafe.*
+import util.chaining.*
 
 class SyncCurlClient private (
     private var valid: Boolean,
     CURL: Ptr[curl.all.CURL]
 ) extends AutoCloseable:
   override def close(): Unit =
-    C.curl_easy_cleanup(CURL); valid = false
+    C.curl_easy_cleanup(CURL)
+    valid = false
 
   import curl.all.CURLoption.*
   def send(request: smithy4s.http.HttpRequest[Blob]): Try[HttpResponse[Blob]] =
@@ -59,32 +57,34 @@ class SyncCurlClient private (
 
             _ <- setBody(request)
 
-            _ <- Try(
-              check(
-                OPT(C.CURLoption.CURLOPT_WRITEFUNCTION, readResponseCallback)
+            _ <- checkTry(
+              OPT(
+                C.CURLoption.CURLOPT_WRITEFUNCTION,
+                readResponseCallback
               )
             )
-            _ <- Try(
-              check(
-                OPT(C.CURLoption.CURLOPT_HEADERFUNCTION, writeHeadersCallback)
+            _ <- checkTry(
+              OPT(
+                C.CURLoption.CURLOPT_HEADERFUNCTION,
+                writeHeadersCallback
               )
             )
 
             bodyBuilder = Array.newBuilder[Byte]
             (bodyBuilderPtr, deallocate) = Captured.unsafe(bodyBuilder)
             _ = finalizers += deallocate
-            _ <- Try(
-              check(OPT(C.CURLoption.CURLOPT_WRITEDATA, bodyBuilderPtr))
-            )
+
+            _ <- checkTry(OPT(C.CURLoption.CURLOPT_WRITEDATA, bodyBuilderPtr))
 
             headerBuilder = Array.newBuilder[Byte]
             (headerBuilderPtr, deallocate) = Captured.unsafe(headerBuilder)
             _ = finalizers += deallocate
-            _ <- Try(
-              check(OPT(C.CURLoption.CURLOPT_HEADERDATA, headerBuilderPtr))
+
+            _ <- checkTry(
+              OPT(C.CURLoption.CURLOPT_HEADERDATA, headerBuilderPtr)
             )
 
-            _ <- Try(check(curl.all.curl_easy_perform(CURL)))
+            _ <- checkTry(curl.all.curl_easy_perform(CURL))
 
             headerLines = new String(
               headerBuilder.result()
@@ -92,7 +92,7 @@ class SyncCurlClient private (
 
             headers = headerLines.flatMap(parseHeaders).groupMap(_._1)(_._2)
 
-            code <- getCode()
+            code <- getStatusCode()
           yield HttpResponse(
             code,
             headers,
@@ -145,12 +145,10 @@ class SyncCurlClient private (
 
   }
 
-  private def getCode() =
-    Try {
-      val code = stackalloc[Int]()
-      check(C.curl_easy_getinfo(CURL, C.CURLINFO.CURLINFO_RESPONSE_CODE, code))
-      !code
-    }
+  private def getStatusCode(): Try[Int] =
+    val code = stackalloc[Int]()
+    checkTry(C.curl_easy_getinfo(CURL, C.CURLINFO.CURLINFO_RESPONSE_CODE, code))
+      .map(_ => !code)
 
   private def setBody(request: HttpRequest[Blob])(using Zone) =
     if !request.body.isEmpty then
@@ -405,13 +403,22 @@ private[smithy4s_curl] case class SimpleRestJsonCodecs(
           case Failure(other) => throw other
 
         val host = getPart(CURLUPART_HOST)
-        val path = getPart(CURLUPART_PATH).split("/").dropWhile(_.isEmpty())
+        val path = getPart(CURLUPART_PATH)
+
+        val cleanedPath: IndexedSeq[String] =
+          path.tail
+            // drop the guaranteed leading slash, so that we don't produce an empty segment for it
+            .tail
+            // splitting an empty path would produce a single element, so we special-case to empty
+            .match
+              case ""    => IndexedSeq.empty[String]
+              case other => other.split("/")
 
         HttpUri(
           httpScheme,
           host,
           port,
-          path,
+          cleanedPath,
           Map.empty,
           pathParams
         )

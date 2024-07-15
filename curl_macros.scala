@@ -6,11 +6,39 @@ import curl.all.curl_easy_strerror
 import scalanative.unsafe.fromCString
 import curl.enumerations.CURLUcode
 import curl.all.curl_url_strerror
+import scala.util.Try
+import scala.util.Failure
+import scala.util.Success
 
 case class CurlException(code: CURLcode, msg: String)
     extends Exception(
       s"Curl error: ${CURLcode.getName(code).getOrElse("")}($code): $msg"
     )
+
+inline def checkTry(inline expr: => CURLcode): Try[CURLcode] = ${
+  checkTryImpl('expr)
+}
+
+private def checkTryImpl(expr: Expr[CURLcode])(using
+    Quotes
+): Expr[Try[CURLcode]] =
+  import quotes.*
+
+  '{
+    val code = $expr
+
+    if code != CURLcode.CURLE_OK then
+      Failure(
+        CurlException(
+          code,
+          fromCString(curl_easy_strerror(code))
+        )
+      )
+    else Success(code)
+    end if
+
+  }
+end checkTryImpl
 
 inline def check(inline expr: => CURLcode): CURLcode = ${ checkImpl('expr) }
 
