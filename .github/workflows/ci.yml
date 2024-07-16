@@ -33,7 +33,9 @@ jobs:
           key: ${{ runner.os }}-sbt-vcpkg
 
       - name: Test 
-        run: make tests
+        run: |
+          docker run -d -p 8081:80 kennethreitz/httpbin
+          HTTPBIN_URL=http://localhost:8081 make tests
 
       - name: Check documentation compiles and runs
         run: make check-docs && make run-example
