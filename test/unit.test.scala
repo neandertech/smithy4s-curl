@@ -50,4 +50,4 @@ object UnitTest extends weaver.FunSuiteIO:
       enc(uri.copy(queryParams = Map.empty, path = Vector("1", "2", "3"))),
       "https://localhost:9999/1/2/3"
     )
-
+end UnitTest

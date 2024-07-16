@@ -15,13 +15,14 @@ publish:
 	scala-cli publish . -S 3.3.3 --signer gpg --gpg-key 15A7215B6CD4016A
 
 code-check:
-	scala-cli fmt . --check
+	scala-cli fmt *.scala test/*.scala --check
 
 run-example:
-	scala-cli run README.md . -M helloWorld
+	# scala-cli run README.md . -M helloWorld
+	echo "No supported yet"
 
 pre-ci:
-	scala-cli fmt .
+	scala-cli fmt *.scala test/*.scala
 
 smithy4s:
 	cd test && \

@@ -22,7 +22,6 @@ inline def checkTry(inline expr: => CURLcode): Try[CURLcode] = ${
 private def checkTryImpl(expr: Expr[CURLcode])(using
     Quotes
 ): Expr[Try[CURLcode]] =
-
   '{
     val code = $expr
 
@@ -42,7 +41,6 @@ end checkTryImpl
 inline def check(inline expr: => CURLcode): CURLcode = ${ checkImpl('expr) }
 
 private def checkImpl(expr: Expr[CURLcode])(using Quotes): Expr[CURLcode] =
-
   '{
     val code = $expr
 
@@ -65,7 +63,6 @@ case class CurlUrlParseException(code: CURLUcode, msg: String)
 inline def checkU(inline expr: => CURLUcode): CURLUcode = ${ checkUImpl('expr) }
 
 private def checkUImpl(expr: Expr[CURLUcode])(using Quotes): Expr[CURLUcode] =
-
   '{
     val code = $expr
 
