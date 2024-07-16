@@ -29,7 +29,7 @@ Latest version: [![smithy4s-curl Scala version support](https://index.scala-lang
 For example's sake, let's say we have a smithy4s service that models one of the endpoints from https://httpbin.org, defined using [smithy4s-deriving](https://github.com/neandertech/smithy4s-deriving) (note we're using [Scala CLI](https://scala-cli.virtuslab.org) for this demo):
 
 ```scala
-//> using dep "tech.neander::smithy4s-deriving::0.0.0-SNAPSHOT"
+//> using dep "tech.neander::smithy4s-deriving::0.0.3"
 //> using platform scala-native
 //> using scala 3.4.2
 //> using option -Wunused:all

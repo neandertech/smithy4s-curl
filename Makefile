@@ -1,6 +1,5 @@
 check-docs:
-	# scala-cli compile README.md *.scala 
-	echo "No supported yet"
+	scala-cli compile README.md *.scala 
 
 tests:
 	cs launch sn-vcpkg --contrib -- scala-cli curl s2n openssl zlib --rename curl=libcurl -- test .
@@ -18,8 +17,7 @@ code-check:
 	scala-cli fmt *.scala test/*.scala --check
 
 run-example:
-	# scala-cli run README.md . -M helloWorld
-	echo "No supported yet"
+	cs launch sn-vcpkg --contrib -- scala-cli curl s2n openssl zlib --rename curl=libcurl -- run README.md *.scala -M helloWorld
 
 pre-ci:
 	scala-cli fmt *.scala test/*.scala
