@@ -1,8 +1,9 @@
 check-docs:
-	scala-cli compile README.md smithy4s-fetch.scala project.scala
+	# scala-cli compile README.md *.scala 
+	echo "No supported yet"
 
-test:
-	scala-cli test .
+tests:
+	cs launch sn-vcpkg --contrib -- scala-cli curl s2n openssl zlib --rename curl=libcurl -- test .
 
 publish-snapshot:
 	scala-cli config publish.credentials s01.oss.sonatype.org env:SONATYPE_USERNAME env:SONATYPE_PASSWORD
@@ -17,7 +18,12 @@ code-check:
 	scala-cli fmt . --check
 
 run-example:
-	scala-cli run README.md project.scala smithy4s-fetch.scala -M helloWorld
+	scala-cli run README.md . -M helloWorld
 
 pre-ci:
 	scala-cli fmt .
+
+smithy4s:
+	cd test && \
+		rm -rf httpbin && \
+		cs launch smithy4s --contrib -- generate httpbin.smithy --skip resource --skip openapi

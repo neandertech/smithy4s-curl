@@ -1,16 +1,25 @@
-//> using dep com.disneystreaming.smithy4s::smithy4s-core::0.18.23
-//> using dep com.disneystreaming.smithy4s::smithy4s-json::0.18.23
-//> using option -Wunused:all
-//> using platform scala-native
-//> using nativeVersion 0.4.17
-//> using publish.computeVersion git:tag
-//> using publish.name smithy4s-curl
-//> using publish.organization tech.neander
+// Main
+//> using scala "3.3.3"
+//> using platforms "scala-native"
+//> using nativeVersion "0.4.17"
+//> using options "-Wunused:all"
+
+//> using dependency "com.disneystreaming.smithy4s::smithy4s-core::0.18.23"
+//> using dependency "com.disneystreaming.smithy4s::smithy4s-json::0.18.23"
+
+//> using publish.computeVersion "git:tag"
+//> using publish.developers "velvetbaldmime|Anton Sviridov|https://indoorvivants.com"
+//> using publish.license "Apache-2.0"
+//> using publish.name "smithy4s-curl"
+//> using publish.organization "tech.neander"
 //> using publish.repository "central-s01"
-//> using publish.secretKey env:PGP_SECRET
-//> using publish.secretKeyPassword env:PGP_PASSPHRASE
-//> using publish.license Apache-2.0
-//> using publish.developer "velvetbaldmime|Anton Sviridov|https://indoorvivants.com"
-//> using publish.vcs github:neandertech/smithy4s-curl
-//> using publish.url https://github.com/neandertech/smithy4s-curl
-//> using scala 3.3.3
+//> using publish.secretKey "env:PGP_SECRET"
+//> using publish.secretKeyPassword "env:PGP_PASSPHRASE"
+//> using publish.url "https://github.com/neandertech/smithy4s-curl"
+//> using publish.vcs "github:neandertech/smithy4s-curl"
+
+//> using test.dependency "com.disneystreaming::weaver-cats::0.8.4"
+//> using test.framework "weaver.framework.CatsEffect"
+//> using test.dependency "com.disneystreaming.smithy4s::smithy4s-http4s::0.18.23"
+//> using test.dependency "org.http4s::http4s-ember-client::0.23.27"
+//> using test.dependency "co.fs2::fs2-io::3.10-365636d"

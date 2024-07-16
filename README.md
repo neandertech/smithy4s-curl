@@ -29,13 +29,14 @@ Latest version: [![smithy4s-curl Scala version support](https://index.scala-lang
 For example's sake, let's say we have a smithy4s service that models one of the endpoints from https://httpbin.org, defined using [smithy4s-deriving](https://github.com/neandertech/smithy4s-deriving) (note we're using [Scala CLI](https://scala-cli.virtuslab.org) for this demo):
 
 ```scala
-//> using dep "tech.neander::smithy4s-deriving::0.0.2"
+//> using dep "tech.neander::smithy4s-deriving::0.0.0-SNAPSHOT"
 //> using platform scala-native
 //> using scala 3.4.2
 //> using option -Wunused:all
 
 import scala.annotation.experimental
 import smithy4s.*, deriving.{given, *}, aliases.*
+import scala.util.Try
 
 case class Response(headers: Map[String, String], origin: String, url: String)
     derives Schema
@@ -44,7 +45,7 @@ case class Response(headers: Map[String, String], origin: String, url: String)
 trait HttpbinService derives API:
   @readonly
   @httpGet("/get")
-  def get(): Response
+  def get(): Try[Response]
 ```
 
 ***Note** that we only need to use `@experimental` annotation because we are using smithy4s-deriving.*
@@ -58,10 +59,11 @@ import smithy4s_curl.*
 
 @main @experimental
 def helloWorld = 
-  val service: HttpbinService = 
+  val service = 
     SimpleRestJsonCurlClient(
       API.service[HttpbinService],
-      "https://httpbin.org"
+      "https://httpbin.org",
+      SyncCurlClient()
      ).make.unliftService
 
   println(service.get())

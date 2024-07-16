@@ -1,14 +1,14 @@
 package smithy4s_curl
 
+import curl.all.{curl_easy_strerror, curl_url_strerror}
+import curl.enumerations.{CURLUcode, CURLcode}
+
 import scala.quoted.*
-import curl.enumerations.CURLcode
-import curl.all.curl_easy_strerror
+import scala.util.{Failure, Success, Try}
+
 import scalanative.unsafe.fromCString
-import curl.enumerations.CURLUcode
-import curl.all.curl_url_strerror
-import scala.util.Try
-import scala.util.Failure
-import scala.util.Success
+
+case class CurlClientStateException(msg: String) extends Exception
 
 case class CurlException(code: CURLcode, msg: String)
     extends Exception(
@@ -22,7 +22,6 @@ inline def checkTry(inline expr: => CURLcode): Try[CURLcode] = ${
 private def checkTryImpl(expr: Expr[CURLcode])(using
     Quotes
 ): Expr[Try[CURLcode]] =
-  import quotes.*
 
   '{
     val code = $expr
@@ -43,7 +42,6 @@ end checkTryImpl
 inline def check(inline expr: => CURLcode): CURLcode = ${ checkImpl('expr) }
 
 private def checkImpl(expr: Expr[CURLcode])(using Quotes): Expr[CURLcode] =
-  import quotes.*
 
   '{
     val code = $expr
@@ -67,8 +65,6 @@ case class CurlUrlParseException(code: CURLUcode, msg: String)
 inline def checkU(inline expr: => CURLUcode): CURLUcode = ${ checkUImpl('expr) }
 
 private def checkUImpl(expr: Expr[CURLUcode])(using Quotes): Expr[CURLUcode] =
-  import quotes.*
-  val e = Expr(s"${expr.show} failed: ")
 
   '{
     val code = $expr
